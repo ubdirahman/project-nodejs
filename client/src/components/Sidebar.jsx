@@ -1,54 +1,69 @@
-import { Link, useNavigate } from 'react-router-dom';
-import { FaTachometerAlt, FaUsers, FaBox, FaShoppingCart, FaMoneyBillWave, FaChartBar, FaCog, FaSignOutAlt, FaUserTie } from 'react-icons/fa';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { FaTachometerAlt, FaUsers, FaBox, FaShoppingCart, FaMoneyBillWave, FaChartBar, FaCog, FaSignOutAlt, FaUserTie, FaSun, FaMoon } from 'react-icons/fa';
+import { useTheme } from '../context/ThemeContext';
 
 const Sidebar = ({ role }) => {
     const navigate = useNavigate();
+    const { theme, toggleTheme } = useTheme();
+    const storedUser = JSON.parse(localStorage.getItem('user')) || { username: 'User' };
+
+    const menuItems = role === 'admin' ? [
+        { path: "/admin", label: "Dashboard", icon: <FaTachometerAlt /> },
+        { path: "/admin/users", label: "Users", icon: <FaUsers /> },
+    ] : [
+        { path: "/dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
+        { path: "/customers", label: "Customers", icon: <FaUserTie /> },
+        { path: "/products", label: "Products", icon: <FaBox /> },
+        { path: "/sales", label: "Sales", icon: <FaShoppingCart /> },
+        { path: "/debts", label: "Debt", icon: <FaMoneyBillWave /> },
+        { path: "/reports", label: "Reports", icon: <FaChartBar /> },
+        { path: "/settings", label: "Settings", icon: <FaCog /> },
+    ];
 
     const handleLogout = () => {
         localStorage.removeItem('user');
         navigate('/login');
     };
 
-    const linkStyle = {
-        display: 'flex',
-        alignItems: 'center',
-        padding: '0.75rem 1rem',
-        color: 'var(--text-secondary)',
-        textDecoration: 'none',
-        borderRadius: '8px',
-        marginBottom: '0.5rem',
-        transition: 'all 0.3s'
-    };
-
     return (
-        <div className="sidebar">
-            <div style={{ marginBottom: '2rem', padding: '0 1rem' }}>
-                <h2 style={{ fontSize: '1.5rem', color: 'var(--primary-color)' }}>InventorySys</h2>
+        <aside className="sidebar">
+            <div className="sidebar-brand">
+                <span className="brand-dot"></span>
+                IMS POS
             </div>
 
-            <nav style={{ flex: 1 }}>
-                {role === 'admin' ? (
-                    <>
-                        <Link to="/admin" className="nav-link" style={linkStyle}><FaTachometerAlt style={{ marginRight: '10px' }} /> Dashboard</Link>
-                        <Link to="/admin/users" className="nav-link" style={linkStyle}><FaUsers style={{ marginRight: '10px' }} /> User Management</Link>
-                    </>
-                ) : (
-                    <>
-                        <Link to="/dashboard" className="nav-link" style={linkStyle}><FaTachometerAlt style={{ marginRight: '10px' }} /> Dashboard</Link>
-                        <Link to="/customers" className="nav-link" style={linkStyle}><FaUserTie style={{ marginRight: '10px' }} /> Customers</Link>
-                        <Link to="/products" className="nav-link" style={linkStyle}><FaBox style={{ marginRight: '10px' }} /> Products</Link>
-                        <Link to="/sales" className="nav-link" style={linkStyle}><FaShoppingCart style={{ marginRight: '10px' }} /> Sales</Link>
-                        <Link to="/debts" className="nav-link" style={linkStyle}><FaMoneyBillWave style={{ marginRight: '10px' }} /> Debt</Link>
-                        <Link to="/reports" className="nav-link" style={linkStyle}><FaChartBar style={{ marginRight: '10px' }} /> Reports</Link>
-                        <Link to="/settings" className="nav-link" style={linkStyle}><FaCog style={{ marginRight: '10px' }} /> Settings</Link>
-                    </>
-                )}
+            <nav className="sidebar-nav">
+                {menuItems.map(item => (
+                    <NavLink
+                        key={item.path}
+                        to={item.path}
+                        end
+                        className={({ isActive }) => `nav-link ${isActive ? 'active' : ''}`}
+                    >
+                        <span className="nav-icon">{item.icon}</span>
+                        <span className="nav-text">{item.label}</span>
+                        <div className="nav-glow"></div>
+                    </NavLink>
+                ))}
             </nav>
 
-            <button onClick={handleLogout} className="btn btn-secondary" style={{ width: '100%', justifyContent: 'flex-start', border: 'none', background: 'transparent', color: 'var(--secondary-color)' }}>
-                <FaSignOutAlt style={{ marginRight: '10px' }} /> Logout
-            </button>
-        </div>
+            <div className="sidebar-footer">
+                <div className="user-profile">
+                    <div className="user-avatar">
+                        {storedUser.username.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="user-info">
+                        <span className="user-name">{storedUser.username}</span>
+                        <button onClick={toggleTheme} className="theme-toggle-inline" title="Toggle Theme">
+                            {theme === 'dark' ? <FaSun /> : <FaMoon />}
+                        </button>
+                    </div>
+                </div>
+                <button onClick={handleLogout} className="logout-btn" title="Logout">
+                    <FaSignOutAlt />
+                </button>
+            </div>
+        </aside>
     );
 };
 

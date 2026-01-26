@@ -5,7 +5,8 @@ const userSchema = mongoose.Schema({
     phone: { type: String, required: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    role: { type: String, enum: ['admin', 'user'], default: 'user' }
+    role: { type: String, enum: ['admin', 'user'], default: 'user' },
+    isBlocked: { type: Boolean, default: false }
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

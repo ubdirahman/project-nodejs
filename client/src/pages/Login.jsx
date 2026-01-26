@@ -26,33 +26,44 @@ const Login = () => {
 
     return (
         <div className="auth-container">
-            <div className="glass-panel" style={{ padding: '2.5rem', width: '100%', maxWidth: '400px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Welcome Back</h2>
-                {error && <div style={{ color: 'var(--secondary-color)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Username</label>
+            <div className="glass-panel" style={{ padding: '3rem', width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                        <div className="brand-dot"></div>
+                        <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>IMS POS</span>
+                    </div>
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Welcome Back</h2>
+                    <p style={{ color: 'var(--text-muted)', margin: 0 }}>Please authenticate to access your dashboard.</p>
+                </div>
+
+                {error && <div style={{ color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center' }}>{error}</div>}
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Username</label>
                         <input
                             type="text"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
                             required
-                            placeholder="Enter your username"
+                            placeholder="Enter your system alias"
                         />
                     </div>
-                    <div style={{ marginBottom: '2rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Password</label>
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Password</label>
                         <input
                             type="password"
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             required
-                            placeholder="Enter your password"
+                            placeholder="••••••••"
                         />
                     </div>
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Login</button>
-                    <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                        <Link to="/register" style={{ color: 'var(--accent-color)', textDecoration: 'none' }}>Don't have an account? Register</Link>
+
+                    <button type="submit" className="btn btn-primary" style={{ height: '48px', marginTop: '1rem' }}>Access System</button>
+
+                    <div style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                        Don't have an account yet? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Register Now</Link>
                     </div>
                 </form>
             </div>

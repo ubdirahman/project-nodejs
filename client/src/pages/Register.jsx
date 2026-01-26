@@ -12,6 +12,22 @@ const Register = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Strict Validation: Text fields must be letters and spaces only
+        const textRegex = /^[a-zA-Z\s]+$/;
+        if (!textRegex.test(full_name)) {
+            alert('Fadlan Hubi Magacaada (haku qorin lambar kaliya)');
+            return;
+        }
+        if (!textRegex.test(username)) {
+            alert('Fadlan Hubi Username-ka (haku qorin lambar kaliya)');
+            return;
+        }
+        if (!/^\d+$/.test(phone)) {
+            alert('Fadlan Phone-ka ku qor lambar kaliya');
+            return;
+        }
+
         try {
             await api.post('/auth/register', { full_name, phone, username, password });
             navigate('/login');
@@ -21,31 +37,54 @@ const Register = () => {
         }
     };
 
+    const handleTextKeyPress = (e) => {
+        if (/[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
+    };
+
+    const handlePhoneKeyPress = (e) => {
+        if (!/[0-9]/.test(e.key)) {
+            e.preventDefault();
+        }
+    };
+
     return (
         <div className="auth-container">
-            <div className="glass-panel" style={{ padding: '2.5rem', width: '100%', maxWidth: '400px' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: '2rem' }}>Create Account</h2>
-                {error && <div style={{ color: 'var(--secondary-color)', marginBottom: '1rem', textAlign: 'center' }}>{error}</div>}
-                <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Full Name</label>
-                        <input type="text" value={full_name} onChange={(e) => setFullName(e.target.value)} required placeholder="Enter full name" />
+            <div className="glass-panel" style={{ padding: '3rem', width: '100%', maxWidth: '450px', display: 'flex', flexDirection: 'column', gap: '2rem' }}>
+                <div style={{ textAlign: 'center' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.5rem' }}>
+                        <div className="brand-dot"></div>
+                        <span style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.02em' }}>IMS POS</span>
                     </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Phone</label>
-                        <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} required placeholder="Enter phone number" />
+                    <h2 style={{ fontSize: '1.75rem', fontWeight: 700, margin: '0 0 0.5rem 0' }}>Join the Platform</h2>
+                    <p style={{ color: 'var(--text-muted)', margin: 0 }}>Start managing your business with precision.</p>
+                </div>
+
+                {error && <div style={{ color: '#ef4444', background: 'rgba(239, 68, 68, 0.1)', padding: '0.75rem', borderRadius: '12px', fontSize: '0.9rem', textAlign: 'center' }}>{error}</div>}
+
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Full Identity Name</label>
+                        <input type="text" value={full_name} onChange={(e) => setFullName(e.target.value)} onKeyPress={handleTextKeyPress} required placeholder="e.g. Abdurahman Ali" />
                     </div>
-                    <div style={{ marginBottom: '1rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Username</label>
-                        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required placeholder="Choose a username" />
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Secure Contact (Phone)</label>
+                        <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} onKeyPress={handlePhoneKeyPress} required placeholder="e.g. 61xxxxxxx" />
                     </div>
-                    <div style={{ marginBottom: '2rem' }}>
-                        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Password</label>
-                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="Choose a password" />
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>System Alias (Username)</label>
+                        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} onKeyPress={handleTextKeyPress} required placeholder="e.g. abdi_pos" />
                     </div>
-                    <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Register</button>
-                    <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-                        <Link to="/login" style={{ color: 'var(--accent-color)', textDecoration: 'none' }}>Already have an account? Login</Link>
+                    <div className="form-group">
+                        <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.5rem' }}>Access Key (Password)</label>
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required placeholder="••••••••" />
+                    </div>
+
+                    <button type="submit" className="btn btn-primary" style={{ height: '48px', marginTop: '1rem' }}>Initiate Registration</button>
+
+                    <div style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+                        Already part of the system? <Link to="/login" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Authenticate Here</Link>
                     </div>
                 </form>
             </div>

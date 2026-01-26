@@ -15,6 +15,9 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ username });
 
     if (user && (await bcrypt.compare(password, user.password))) {
+        if (user.isBlocked) {
+            return res.status(403).json({ message: 'Your account is blocked. Please contact admin.' });
+        }
         res.json({
             _id: user._id,
             full_name: user.full_name,

@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const bcrypt = require('bcryptjs');
 
 // @desc    Get dashboard stats
 // @route   GET /api/admin/stats
@@ -38,4 +39,37 @@ const deleteUser = async (req, res) => {
     }
 };
 
-module.exports = { getAdminStats, getUsers, deleteUser };
+
+// @desc    Toggle user block status
+// @route   PUT /api/admin/users/:id/block
+// @access  Private/Admin
+const toggleUserBlock = async (req, res) => {
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        user.isBlocked = !user.isBlocked;
+        await user.save();
+        res.json({ message: `User ${user.isBlocked ? 'blocked' : 'unblocked'} successfully`, isBlocked: user.isBlocked });
+    } else {
+        res.status(404).json({ message: 'User not found' });
+    }
+};
+
+// @desc    Update user password
+// @route   PUT /api/admin/users/:id/password
+// @access  Private/Admin
+const updateUserPassword = async (req, res) => {
+    const { password } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (user) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(password, salt);
+        await user.save();
+        res.json({ message: 'Password updated successfully' });
+    } else {
+        res.status(404).json({ message: 'User not found' });
+    }
+};
+
+module.exports = { getAdminStats, getUsers, deleteUser, toggleUserBlock, updateUserPassword };

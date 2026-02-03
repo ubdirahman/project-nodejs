@@ -1,47 +1,54 @@
-const Sale = require('../models/Sale');
-const Product = require('../models/Product');
+const Sale = require('../models/Sale'); // Keento qaabka iibka
+const Product = require('../models/Product'); // Keento qaabka alaabta
 
+// @desc    Soo qaado dhamaan iibka uu sameeyey isticmaalahan
 const getSales = async (req, res) => {
-    const sales = await Sale.find({}).populate('product', 'name price');
+    const sales = await Sale.find({ user: req.user._id }).populate('product', 'name price');
     res.json(sales);
 };
 
+// @desc    Samee iib cusub (Create Sale)
 const createSale = async (req, res) => {
     const { product, quantity, price } = req.body;
 
-    // Check product stock
-    const productItem = await Product.findById(product);
+    // Hubi alaabta iyo inuu isticmaalahan leeyahay
+    const productItem = await Product.findOne({ _id: product, user: req.user._id });
     if (!productItem) {
         return res.status(404).json({ message: 'Product not found' });
     }
 
+    // Hubi in stock-ku ku filan yahay
     if (productItem.stock < quantity) {
         return res.status(400).json({ message: 'Insufficient stock' });
     }
 
-    // Create Sale
+    // Xisaabi wadarta guud
     const total = quantity * price;
+
+    // Samee diwaanka iibka
     const sale = new Sale({
         product,
         quantity,
         price,
-        total
+        total,
+        user: req.user._id
     });
 
     const createdSale = await sale.save();
 
-    // Update Stock
+    // Ka jar alaabta la iibiyey stock-ka (Update Stock)
     productItem.stock = productItem.stock - quantity;
     await productItem.save();
 
     res.status(201).json(createdSale);
 };
 
+// @desc    Tirtir iib (Delete Sale)
 const deleteSale = async (req, res) => {
-    const sale = await Sale.findById(req.params.id);
+    const sale = await Sale.findOne({ _id: req.params.id, user: req.user._id });
 
     if (sale) {
-        // Restore stock
+        // Markii iibka la tirtiro, alaabta ku celi bakhaarka (Restore Stock)
         const product = await Product.findById(sale.product);
         if (product) {
             product.stock += sale.quantity;
@@ -55,16 +62,16 @@ const deleteSale = async (req, res) => {
     }
 };
 
+// @desc    Wax ka bedel iibka (Update Sale)
 const updateSale = async (req, res) => {
-    const sale = await Sale.findById(req.params.id);
+    const sale = await Sale.findOne({ _id: req.params.id, user: req.user._id });
 
     if (sale) {
-        // For simplicity, we only allow updating price or correcting total.
-        // Changing quantity/product is complex due to stock calculations.
-        // We will allow deleting and re-creating for that.
-        // But the user asked for "Update". I'll allow price updates here.
+        // Halkan waxaan kaliya u oggolaanayaa in qiimaha la bedelo
+        // Haddii tirada/alaabta la dhaafo waa in la tirtiraa kadibna cusub la sameeyaa
         sale.price = req.body.price || sale.price;
         sale.total = sale.quantity * sale.price;
+
         const updatedSale = await sale.save();
         res.json(updatedSale);
     } else {

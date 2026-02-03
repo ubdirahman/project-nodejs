@@ -6,6 +6,15 @@ import { FaUserShield, FaUserEdit, FaLock, FaTrashAlt, FaBan, FaCheckCircle, FaK
 const AdminUsers = () => {
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [showRegister, setShowRegister] = useState(false);
+    const [formData, setFormData] = useState({
+        full_name: '',
+        username: '',
+        phone: '',
+        password: '',
+        role: 'user'
+    });
+
     const [notification, setNotification] = useState(null);
 
     const showNotification = (msg) => {
@@ -69,12 +78,97 @@ const AdminUsers = () => {
         }
     };
 
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        try {
+            await api.post('/admin/register', formData);
+            showNotification(`User ${formData.username} si guul leh ayaa loo diwaangeliyay!`);
+            setShowRegister(false);
+            setFormData({ full_name: '', username: '', phone: '', password: '', role: 'user' });
+            fetchUsers();
+        } catch (error) {
+            console.error(error);
+            alert(error.response?.data?.message || 'Waa la diiday diwaangelinta.');
+        }
+    };
+
     return (
         <Layout>
-            <div style={{ marginBottom: '1.25rem' }}>
-                <h1 style={{ marginBottom: '0.25rem' }}>User Control Center</h1>
-                <p style={{ color: 'var(--text-muted)', margin: 0 }}>Manage system access and security credentials.</p>
+            <div style={{ marginBottom: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                    <h1 style={{ marginBottom: '0.25rem' }}>User Control Center</h1>
+                    <p style={{ color: 'var(--text-muted)', margin: 0 }}>Manage system access and security credentials.</p>
+                </div>
+                <button
+                    className="btn btn-primary"
+                    onClick={() => setShowRegister(!showRegister)}
+                    style={{ padding: '0.75rem 1.5rem', borderRadius: '12px' }}
+                >
+                    {showRegister ? 'Cancel' : 'Add New User'}
+                </button>
             </div>
+
+            {showRegister && (
+                <div className="glass-panel animate-fade-in" style={{ padding: '2rem', marginBottom: '2rem', border: '1px solid var(--primary-glow)' }}>
+                    <h3 style={{ marginBottom: '1.5rem' }}>Diwaangeli User Cusub</h3>
+                    <form onSubmit={handleRegister} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+                        <div className="form-group">
+                            <label>Magaca oo Buuxa</label>
+                            <input
+                                type="text"
+                                placeholder="Full Name"
+                                value={formData.full_name}
+                                onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Username</label>
+                            <input
+                                type="text"
+                                placeholder="Username"
+                                value={formData.username}
+                                onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Telefoonka</label>
+                            <input
+                                type="text"
+                                placeholder="Phone"
+                                value={formData.phone}
+                                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Password</label>
+                            <input
+                                type="password"
+                                placeholder="Password"
+                                value={formData.password}
+                                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                                required
+                            />
+                        </div>
+                        <div className="form-group">
+                            <label>Role</label>
+                            <select
+                                value={formData.role}
+                                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
+                                style={{ width: '100%', padding: '0.75rem', borderRadius: '8px', background: 'var(--bg-dark)', color: 'white', border: '1px solid var(--border-color)' }}
+                            >
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'flex-end' }}>
+                            <button type="submit" className="btn btn-primary" style={{ width: '100%', height: '48px' }}>Save User</button>
+                        </div>
+                    </form>
+                </div>
+            )}
 
             {notification && (
                 <div className="glass-panel animate-fade-in" style={{

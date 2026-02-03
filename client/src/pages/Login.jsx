@@ -62,9 +62,6 @@ const Login = () => {
 
                     <button type="submit" className="btn btn-primary" style={{ height: '48px', marginTop: '1rem' }}>Access System</button>
 
-                    <div style={{ textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-                        Don't have an account yet? <Link to="/register" style={{ color: 'var(--primary)', fontWeight: 600, textDecoration: 'none' }}>Register Now</Link>
-                    </div>
                 </form>
             </div>
         </div>
